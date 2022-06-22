@@ -1,9 +1,12 @@
+from p4j.template import Template
+
+
 class Parser:
-    def __init__(self, string, template):
+    def __init__(self, string, template=None):
         self.string = string
-        self.template = template
+        self.template = Template(template)
         self.new_encode = {}
-        
+
     def _make_positional(self, template, item):
         position_one = (
             0
@@ -16,32 +19,28 @@ class Parser:
             else int(template[item][template[item].find(":") + 1 :])
         )
         return self.string[position_one:position_two]
-        
-    def save_data(self):
-        pass   
-        
+
     def decode(self):
-        # template to str
         pass
 
-    def encode(self, template=None):
-        # str to template
-        template = self.template
-
+    def encode(self):
         def recurssive(template=None):
-            
             recursive_encode = {}
-            for item in template:
-                if type(template[item]) == dict:
-                    recursive_encode[item] = recurssive(
-                        template=template[item],
-                    )
-                    self.new_encode.update(recursive_encode)
+            response_encode = {}
+            dict_keys = []
+            for chave in template:
+                if type(template[chave]) == dict:
+                    dict_keys.append(chave)
                 else:
-                    recursive_encode[item] = self._make_positional(template, item)
-            
+                    response_encode[chave] = self._make_positional(template, chave)
+            for item in dict_keys:
+                new_template = template[item]
+                recursive_encode[item] = recurssive(template=new_template)
+            recursive_encode.update(response_encode)
             return recursive_encode
-        
-        recurssive(template)
-        return self.new_encode
 
+        try:
+            template = self.template
+            return recurssive(template)
+        except Exception as error:
+            return error
