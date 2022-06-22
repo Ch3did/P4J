@@ -1,5 +1,5 @@
-import os
 import bisect
+import os
 
 
 def get_project_root():
