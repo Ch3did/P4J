@@ -1,11 +1,13 @@
-import os
 import bisect
+import os
+
 
 def get_project_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
 def load_file(filename, max_retries=5):
-    current_path = get_project_root() + '/'
+    current_path = get_project_root() + "/"
     for i in range(max_retries):
         try:
             with open(os.path.join(current_path, filename)) as f:
@@ -14,13 +16,16 @@ def load_file(filename, max_retries=5):
             current_path = os.path.dirname(current_path)
     raise FileNotFoundError(filename)
 
-def validate(target_dict, allowed_separators=["-", ":"], integer_only=True, non_repeatable=True):
+
+def validate(
+    target_dict, allowed_separators=["-", ":"], integer_only=True, non_repeatable=True
+):
     """
-        allowed_separators: list of allowed separators for values. Default is ["-", ","]
-        integer_only: if True, only integers are allowed for values.
+    allowed_separators: list of allowed separators for values. Default is ["-", ","]
+    integer_only: if True, only integers are allowed for values.
     """
     already_seen = []
-    for k,v in target_dict.items():
+    for k, v in target_dict.items():
         if isinstance(v, dict):
             validate(v, allowed_separators, integer_only, non_repeatable)
             continue
@@ -41,9 +46,11 @@ def validate(target_dict, allowed_separators=["-", ":"], integer_only=True, non_
                         raise ValueError("Value '{}' is not unique.".format(value))
                 bisect.insort(already_seen, value)
 
+
 def try_split(string, separators):
     for separator in separators:
         if string.find(separator) != -1:
             return string.split(separator)
-    raise ValueError("Could not split string '{}' with separators {}".format(string, separators))
-    
+    raise ValueError(
+        "Could not split string '{}' with separators {}".format(string, separators)
+    )
