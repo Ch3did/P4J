@@ -18,16 +18,16 @@ def load_file(filename, max_retries=5):
 
 
 def validate(
-    target_dict, allowed_separators=["-", ":"], integer_only=True, non_repeatable=True
+    target_dict, allowed_separators=["-", ":"], integer_only=True, non_repeatable=True, already_seen=None
 ):
     """
     allowed_separators: list of allowed separators for values. Default is ["-", ","]
     integer_only: if True, only integers are allowed for values.
     """
-    already_seen = []
+    already_seen = [] if already_seen is None else already_seen
     for k, v in target_dict.items():
         if isinstance(v, dict):
-            validate(v, allowed_separators, integer_only, non_repeatable)
+            validate(v, allowed_separators, integer_only, non_repeatable, already_seen)
             continue
         if not v:
             raise ValueError("Value for key '{}' is empty".format(k))
@@ -42,7 +42,7 @@ def validate(
                     raise ValueError("Value '{}' is not an integer.".format(value))
             if non_repeatable:
                 if len(already_seen) > 1:
-                    if value >= already_seen[0] and value <= already_seen[-1]:
+                    if value >= already_seen[0] and value <= already_seen[-1] and not values[0] == values[1]:
                         raise ValueError("Value '{}' is not unique.".format(value))
                 bisect.insort(already_seen, value)
 
