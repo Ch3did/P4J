@@ -2,12 +2,11 @@ from p4j.template import Template
 
 
 class Parser:
-    def __init__(self, string, template=None):
+    def __init__(self, string):
         self.string = string
-        self.template = Template(template)
         self.new_encode = {}
 
-    def _make_positional(self, template, item):
+    def _make_positional_coordinates(self, template, item):
         position_one = (
             0
             if not template[item][: template[item].find(":")]
@@ -20,10 +19,11 @@ class Parser:
         )
         return self.string[position_one:position_two]
 
-    def decode(self):
+    def encode(self):
         pass
 
-    def encode(self):
+    def decode(self, **kwargs):
+        self.template = Template(**kwargs).template
         def recurssive(template=None):
             recursive_encode = {}
             response_encode = {}
@@ -32,7 +32,7 @@ class Parser:
                 if type(template[chave]) == dict:
                     dict_keys.append(chave)
                 else:
-                    response_encode[chave] = self._make_positional(template, chave)
+                    response_encode[chave] = self._make_positional_coordinates(template, chave)
             for item in dict_keys:
                 new_template = template[item]
                 recursive_encode[item] = recurssive(template=new_template)
@@ -41,6 +41,7 @@ class Parser:
 
         try:
             template = self.template
+            
             return recurssive(template)
         except Exception as error:
             return error
