@@ -42,7 +42,7 @@ def validate(
                     raise ValueError("Value '{}' is not an integer.".format(value))
             if non_repeatable:
                 if len(already_seen) > 1:
-                    if value >= already_seen[0] and value <= already_seen[-1] and not values[0] == values[1]:
+                    if int(value) >= int(already_seen[0]) and int(value) <= int(already_seen[-1]) and not values[0] == values[1]:
                         raise ValueError("Value '{}' is not unique.".format(value))
                 bisect.insort(already_seen, value)
 
